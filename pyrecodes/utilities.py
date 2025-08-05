@@ -21,13 +21,16 @@ def get_class(module_name: str, class_name: str, folder_name: str) -> object:
     target_class = getattr(class_module, class_name)
     return target_class
 
-def create_locality_polygon(bounding_box: list) -> shapely.Polygon:
-    return shapely.Polygon([(lat, long) for long, lat in bounding_box])
+def create_locality_polygon(bounding_box_type: str, bounding_box: list) -> shapely.Polygon:
+    if bounding_box_type == 'BoundingBox':
+        return shapely.Polygon([(lat, long) for long, lat in bounding_box])
+    elif bounding_box_type == 'WKTPolygon':
+        return create_geometry_from_wkt(bounding_box)
 
 def component_inside_bounding_box(component_geometry: shapely.Point, polygon: shapely.Polygon) -> bool:
     return component_geometry.within(polygon)
 
-def create_component_geometry_from_wkt(geometry_string: str) -> shapely.geometry.base.BaseGeometry:
+def create_geometry_from_wkt(geometry_string: str) -> shapely.geometry.base.BaseGeometry:
     return shapely.wkt.loads(geometry_string)
 
 def create_component_geometry_as_point(component_location: list) -> shapely.Point:

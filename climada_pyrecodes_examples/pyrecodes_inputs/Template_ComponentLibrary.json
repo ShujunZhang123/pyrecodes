@@ -1,0 +1,224 @@
+{
+    "EmergencyResponseCenter": {
+        "ComponentClass": {
+            "FileName": "standard_irecodes_component",
+            "ClassName": "StandardiReCoDeSComponent"
+        },
+        "RecoveryModel": {
+            "FileName": "no_recovery_activity_model",
+            "ClassName": "NoRecoveryActivityModel",
+            "Parameters": {},
+            "DamageFunctionalityRelation": {
+                "Type": "Constant"
+            }
+        },
+        "Supply": {
+            "ConstructionUnit": {
+                "Amount": 2680,
+                "FunctionalityToAmountRelation": "Linear"
+            }
+        }
+    },
+    "DS0_Building": {
+        "ComponentClass": {
+            "FileName": "r2d_component",
+            "ClassName": "R2DBuilding"
+        },
+        "RecoveryModel": {
+            "FileName": "no_recovery_activity_model",
+            "ClassName": "NoRecoveryActivityModel",
+            "Parameters": {},
+            "DamageFunctionalityRelation": {
+                "Type": "Constant"
+            }
+        },
+        "Supply": {
+            "Shelter": {
+                "Amount": 0,
+                "FunctionalityToAmountRelation": "Linear",
+                "UnmetDemandToAmountRelation": "Constant",
+                "IsHousingResource": "True"
+            }
+        },
+        "OperationDemand": {
+            "Shelter": {
+                "Amount": 0,
+                "FunctionalityToAmountRelation": "Constant",
+                "IsHousingResource": "True"
+            }
+        }
+    },
+    "DS1_Building": {
+        "ComponentClass": {
+            "FileName": "r2d_component",
+            "ClassName": "R2DBuilding"
+        },
+        "RecoveryModel": {
+            "FileName": "component_level_recovery_activities_model",
+            "ClassName": "ComponentLevelRecoveryActivitiesModel",
+            "Parameters": {
+                "Repair": {
+                    "Duration": {
+                        "Deterministic": {
+                            "Value": 1
+                        }
+                    },
+                    "Demand": [
+                        {
+                            "Resource": "ConstructionUnit",
+                            "Amount": 1
+                        }
+                    ],
+                    "PrecedingActivities": []
+                }
+            },
+            "DamageFunctionalityRelation": {
+                "Type": "Constant"
+            }
+        },
+        "Supply": {
+            "Shelter": {
+                "Amount": 0,
+                "FunctionalityToAmountRelation": "Linear",
+                "UnmetDemandToAmountRelation": "Constant",
+                "IsHousingResource": "True"
+            }
+        },
+        "OperationDemand": {
+            "Shelter": {
+                "Amount": 0,
+                "FunctionalityToAmountRelation": "Constant",
+                "IsHousingResource": "True"
+            }
+        }
+    },
+    "DS2_Building": {
+        "ComponentClass": {
+            "FileName": "r2d_component",
+            "ClassName": "R2DBuilding"
+        },
+        "RecoveryModel": {
+            "FileName": "component_level_recovery_activities_model",
+            "ClassName": "ComponentLevelRecoveryActivitiesModel",
+            "Parameters": {
+                "Repair": {
+                    "Duration": {
+                        "Lognormal": {
+                            "Median": 1,
+                            "Dispersion": 0.0
+                        }
+                    },
+                    "Demand": [
+                        {
+                            "Resource": "ConstructionUnit",
+                            "Amount": 1
+                        }
+                    ],
+                    "PrecedingActivities": []
+                }
+            },
+            "DamageFunctionalityRelation": {
+                "Type": "ReverseBinary"
+            }
+        },
+        "Supply": {
+            "Shelter": {
+                "Amount": 0,
+                "FunctionalityToAmountRelation": "Linear",
+                "UnmetDemandToAmountRelation": "Constant"
+            }
+        },
+        "OperationDemand": {
+            "Shelter": {
+                "Amount": 0,
+                "FunctionalityToAmountRelation": "Constant"
+            }
+        }
+    },
+    "DS3_Building": {
+        "ComponentClass": {
+            "FileName": "r2d_component",
+            "ClassName": "R2DBuilding"
+        },
+        "RecoveryModel": {
+            "FileName": "component_level_recovery_activities_model",
+            "ClassName": "ComponentLevelRecoveryActivitiesModel",
+            "Parameters": {
+                "Repair": {
+                    "Duration": {
+                        "Lognormal": {
+                            "Median": 3,
+                            "Dispersion": 0.0
+                        }
+                    },
+                    "Demand": [
+                        {
+                            "Resource": "ConstructionUnit",
+                            "Amount": 1
+                        }
+                    ],
+                    "PrecedingActivities": []
+                }
+            },
+            "DamageFunctionalityRelation": {
+                "Type": "ReverseBinary"
+            }
+        },
+        "Supply": {
+            "Shelter": {
+                "Amount": 0,
+                "FunctionalityToAmountRelation": "Linear",
+                "UnmetDemandToAmountRelation": "Constant"
+            }
+        },
+        "OperationDemand": {
+            "Shelter": {
+                "Amount": 0,
+                "FunctionalityToAmountRelation": "Constant"
+            }
+        }
+    },
+    "DS4_Building": {
+        "ComponentClass": {
+            "FileName": "r2d_component",
+            "ClassName": "R2DBuilding"
+        },
+        "RecoveryModel": {
+            "FileName": "component_level_recovery_activities_model",
+            "ClassName": "ComponentLevelRecoveryActivitiesModel",
+            "Parameters": {
+                "Repair": {
+                    "Duration": {
+                        "Lognormal": {
+                            "Median": 6,
+                            "Dispersion": 0.0
+                        }
+                    },
+                    "Demand": [
+                        {
+                            "Resource": "ConstructionUnit",
+                            "Amount": 1
+                        }
+                    ],
+                    "PrecedingActivities": []
+                }
+            },
+            "DamageFunctionalityRelation": {
+                "Type": "ReverseBinary"
+            }
+        },
+        "Supply": {
+            "Shelter": {
+                "Amount": 0,
+                "FunctionalityToAmountRelation": "Linear",
+                "UnmetDemandToAmountRelation": "Constant"
+            }
+        },
+        "OperationDemand": {
+            "Shelter": {
+                "Amount": 0,
+                "FunctionalityToAmountRelation": "Constant"
+            }
+        }
+    }
+}

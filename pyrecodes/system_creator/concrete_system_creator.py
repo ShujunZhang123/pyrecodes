@@ -2,7 +2,7 @@ from pyrecodes.system_creator.system_creator import SystemCreator
 from pyrecodes.component.component import Component
 from pyrecodes.resilience_calculator.resilience_calculator import ResilienceCalculator
 from pyrecodes.resource_distribution_model.resource_distribution_model import ResourceDistributionModel
-from pyrecodes.utilities import get_class, get_locality_coordinates_from_geojson
+from pyrecodes.utilities import get_class, get_locality_coordinates_from_geojson, create_geometry_from_wkt
 
 class ConcreteSystemCreator(SystemCreator):
     """
@@ -114,7 +114,7 @@ class ConcreteSystemCreator(SystemCreator):
 
     def get_locality_coordinates(self, content) -> dict:
         locality_info = content.get('Coordinates', {})
-        if list(locality_info.keys())[0] == 'BoundingBox' or list(locality_info.keys())[0] == 'Centroid':
+        if list(locality_info.keys())[0] == 'BoundingBox' or list(locality_info.keys())[0] == 'Centroid' or list(locality_info.keys())[0] == 'WKTPolygon':
             return locality_info
         elif list(locality_info.keys())[0] == 'GeoJSON':
             return get_locality_coordinates_from_geojson(locality_info)

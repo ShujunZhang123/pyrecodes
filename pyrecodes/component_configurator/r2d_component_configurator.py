@@ -5,10 +5,8 @@ from pyrecodes.component_configurator.r2d_repair_configurator import R2DBuilding
 from pyrecodes.component.standard_irecodes_component import StandardiReCoDeSComponent
 import json
 import shapely
-import pyproj
+# import pyproj
 from abc import abstractmethod
-
-MAX_DAMAGE_STATE = 4
 
 class R2DComponentConfigurator(ComponentConfigurator):
     """
@@ -29,6 +27,7 @@ class R2DComponentConfigurator(ComponentConfigurator):
     
     def set_general_information(self, component: Component, component_data: dict):
         component.general_information = component_data['Information']['GeneralInformation']
+        component.general_information['PopulationRatio'] = 1.0
         component.general_information[StandardiReCoDeSComponent.DemandTypes.OPERATION_DEMAND.value] = {resource.name: resource.current_amount for resource in component.demand[StandardiReCoDeSComponent.DemandTypes.OPERATION_DEMAND.value].values()}
         component.general_information[StandardiReCoDeSComponent.DemandTypes.RECOVERY_DEMAND.value] = {resource.name: resource.current_amount for resource in component.demand[StandardiReCoDeSComponent.DemandTypes.RECOVERY_DEMAND.value].values()}
     
@@ -49,8 +48,11 @@ class R2DComponentConfigurator(ComponentConfigurator):
     def set_asset_ids(self, component, component_data:dict):
         component.asset_type = component_data['AssetType']
         component.asset_subtype = component_data['AssetSubtype']
-        component.aim_id = component_data['Information']['GeneralInformation']['AIM_id']
         component.r2d_comp = True
+        self.set_aim_id(component, component_data)
+
+    def set_aim_id(self, component, component_data: dict):
+        component.aim_id = component_data['Information']['GeneralInformation']['AIM_id']
 
     @abstractmethod
     def set_repair_configurator(self, component: Component) -> None:
@@ -64,15 +66,10 @@ class R2DComponentConfigurator(ComponentConfigurator):
 
     def get_damage_state(self, damage_info: dict) -> int:
         """
-        | Method to get the damage state of an R2D component based on the damage information provided in the R2D output files.
-        | If building collapsed, damage state 4 is returned.
-        | If not collapsed, maximum damage state of all damage states provided in the R2D output files is used.
+        | Method to set the damage state of an R2D component based on the damage information provided in the R2D output files.
+        | At the moment, the maximum damage state of all damage states provided in the R2D output files is used.
         """
-        if damage_info['Damage']['collapse-0'] == 1:
-            return MAX_DAMAGE_STATE
-        else:
-            return max([value for key, value in damage_info['Damage'].items() if not('collapse' in key)]+ [0])
-
+        return max([value for key, value in damage_info['Damage'].items() if not('collapse' in key)]+ [0])
     
 class R2DBuildingConfigurator(R2DComponentConfigurator):
     """
@@ -221,13 +218,6 @@ class R2DPipeConfigurator(R2DComponentConfigurator):
     
     def set_r2d_dict_getter(self, component: Component):        
         component.r2d_dict_getter = R2DPipeDictGetter(component)
-
-    def get_damage_state(self, damage_info: dict) -> int:
-        """
-        | Method to get the damage state of R2D pipes based on the damage information provided in the R2D output files.
-        | Aggreggate dmage states are considered. Leak = 1. Break = 2.
-        """
-        return max([damage_info['Damage'].get('aggregate-1', 0), damage_info['Damage'].get('aggregate-2', 0)])
 
 class R2DBridgeConfigurator(R2DTransportationComponentConfigurator):
     """

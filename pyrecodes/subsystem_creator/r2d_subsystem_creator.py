@@ -13,28 +13,37 @@ class R2DSubsystemCreator(SubsystemCreator):
     
     def set_component_configurator(self) -> None:
         for component_type in self.parameters['AssetTypes']:
-            component_configurator_class = getattr(r2d_component_configurator, f'R2D{component_type}Configurator')
+            component_configurator_class = self.get_component_configurator_class(component_type)
             system_level_data = {key: self.constants.get(key, None) for key in component_configurator_class.SYSTEM_LEVEL_DATA}
             recovery_time_stepping = self.parameters.get('RecoveryTimeStepping', None)
             self.component_configurator[component_type] = component_configurator_class(system_level_data, recovery_time_stepping)
+
+    def get_component_configurator_class(self, component_type: str) -> type:
+        return getattr(r2d_component_configurator, f'R2D{component_type}Configurator')
     
     def create_components(self) -> list[Component]:
-        info_json_file = read_json_file(self.parameters['R2DJSONFile_Info'])
-        results_json_file = read_json_file(self.damage_input['Parameters']['DamageFile'])
+        info_json_file = self.get_exposure_file()
+        results_json_file = self.get_damage_file()
         components = []
-        subsystem_info = info_json_file[self.parameters['SubsystemNameInR2DJSON']]
-        self.locality['ShapelyPolygon'] = create_locality_polygon(self.locality['Coordinates']['BoundingBox'])
+        subsystem_info = info_json_file[self.parameters['SubsystemNameInExposureFile']] #Change this key in system configuration files!
+        self.locality['ShapelyPolygon'] = create_locality_polygon(list(self.locality['Coordinates'].keys())[0], list(self.locality['Coordinates'].values())[0])
         for asset_type in self.parameters['AssetTypes']:
             for component_id, component_info in subsystem_info[asset_type].items():                    
                 component_location = self.get_component_geometry(component_info)
                 if component_inside_bounding_box(component_location, self.locality['ShapelyPolygon']):          
-                    damage_info = results_json_file[self.parameters['SubsystemNameInR2DJSON']][asset_type][component_id]
+                    damage_info = results_json_file[self.parameters['SubsystemNameInExposureFile']][asset_type][component_id]
                     components += self.create_component(component_info, damage_info,
-                                    self.parameters['SubsystemNameInR2DJSON'],
+                                    self.parameters['SubsystemNameInExposureFile'],
                                     asset_type)
                 if len(components) >= self.parameters.get('MaxNumComponents', float('inf')):
                     break
         return components
+    
+    def get_exposure_file(self) -> dict:
+        return read_json_file(self.parameters['ExposureFile'])
+    
+    def get_damage_file(self) -> dict:
+        return read_json_file(self.damage_input['Parameters']['DamageFile'])
     
     def create_component(self, component_info: dict, damage_info: dict, 
                          asset_type: str, asset_subtype: str) -> Component:
@@ -57,7 +66,8 @@ class R2DSubsystemCreator(SubsystemCreator):
 
         | TODO: Needs improvement for components whose geometry are lines (roads, pipes) and polygons. Future work.        
         """
-        return create_component_geometry_as_point([component_info['GeneralInformation']['location']['latitude'], component_info['GeneralInformation']['location']['longitude']])
+        # return create_component_geometry_as_point([component_info['GeneralInformation']['location']['latitude'], component_info['GeneralInformation']['location']['longitude']])
+        return create_component_geometry_as_point([component_info['GeneralInformation']['Latitude'], component_info['GeneralInformation']['Longitude']])
     
     def get_component_damage_state(self, damage_info: dict, component_type: str) -> int:
         return self.component_configurator[component_type].get_damage_state(damage_info)
